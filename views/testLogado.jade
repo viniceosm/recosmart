@@ -1,0 +1,14 @@
+if !usuario.exist
+    li
+        a(href='/login')
+            i.material-icons account_circle
+            | Login
+            .ripple-container
+else
+	li
+		a #{usuario.nome}
+	li
+		a(href="/sair")
+		    i.material-icons exit_to_app
+            | Sair
+            .ripple-container

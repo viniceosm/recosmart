@@ -1,0 +1,33 @@
+nav.navbar.navbar-primary.navbar-fixed-top
+    .container
+        .navbar-header
+            a.navbar-brand(href='/') #{title}
+
+            button.navbar-toggle.collapsed.pull-right(type='button', data-toggle='collapse', data-target='#menu-navbar-primary')
+                span.sr-only Toggle navigation
+                span.icon-bar
+                span.icon-bar
+                span.icon-bar
+
+            .visible-xs-block
+                if !usuario
+                    a.text-light(href='/login')
+                        i.material-icons account_circle
+                        | Login
+                else
+                    .navbar-brand.pull-right
+                            a(href="/u/#{usuario.nome}")
+                                button.btn.btn-success.btn-xs #{usuario.nome}
+
+        #menu-navbar-primary.collapse.navbar-collapse
+            ul.nav.navbar-nav.navbar-right
+                if !usuario
+                    li
+                        a(href='/login')
+                            i.material-icons account_circle
+                            | Login
+                else
+                    li
+                        a(href="/sair")
+                            i.material-icons exit_to_app
+                            | Sair

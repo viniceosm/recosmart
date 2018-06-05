@@ -1,0 +1,91 @@
+doctype html
+html
+	include head
+	body
+		include navbar
+		
+		.wrapper
+			.header
+			.container-fluid
+				.row
+					div.col.col-md-12
+						.panel
+							.panel-heading Recomendados
+							.panel-body
+								.row
+									.col.col-md-12(style="overflow: auto")
+										p Mais recomendado pro menos recomendado:
+										#listaRecomendados
+											each recomendado in recomendados.likelihoods
+												.col.col-md-6
+													.panel
+														.panel-body.cardPequeno
+															div.overflow-hidden
+																img.pull-left(src="#{recomendado.imagem}", height="60")
+																div.nomeCelular.pull-left
+																	b #{recomendado.category}
+															div
+																p SO: #{recomendado.sistema_operacional}
+																p Processador: #{recomendado.processador}
+																p #{recomendado.ram} RAM
+
+				div.row
+					div.col.col-md-4
+						div.panel
+							div.panel-heading Pesquisar por caracteristicas
+							div.panel-body
+								div.row
+									div.col.col-md-12
+										form#formPesquisaCelular
+											- var keysOpcoes = [] 
+											- keysOpcoes[0] = { nome: 'Sistema operacional', opcoes: ['Android 8.1', 'Android 8.0'] }
+											- keysOpcoes[1] = { nome: 'Marca', opcoes: ['Samsung', 'Lenovo'] }
+
+											each keyOp in pesquisaveis
+												div.form-group
+													| #{keyOp.nome}
+													each op in keyOp.opcoes
+														.checkbox
+															label
+																input(type='checkbox', name='chk#{keyOp.nome}', value="#{op}")
+																| #{op}
+
+											div.row
+												div.col.col-md-6.col-sm-6
+													button#btnAdicionar.btn.btn-success.btn-block(type="submit") Pesquisar
+
+					div.col.col-md-8
+						.panel
+							.panel-heading Recomendados
+							.panel-body
+								.row
+									.col.col-md-12
+										p Mais recomendado pro menos recomendado:
+										#listaRecomendados
+											each recomendado in recomendados.likelihoods
+												.col.col-md-6
+													.panel
+														.panel-body.cardPequeno
+															div.overflow-hidden
+																img.pull-left(src="#{recomendado.imagem}", height="60")
+																div.nomeCelular.pull-left
+																	b #{recomendado.category}
+															div
+																p SO: #{recomendado.sistema_operacional}
+																p Processador: #{recomendado.processador}
+																p #{recomendado.ram} RAM
+
+					div.col.col-md-12.hide
+							div.panel
+								div.panel-heading
+								div.panel-body
+									div.row
+										div.col.col-md-12
+											form#formSimulaRecomendados
+												div.form-group
+													label.control-label(for="caracteristicas") Escreva as caracteristicas
+													input.form-control(type="text", name="caracteristicas", value="sistema operacional android 7")
+
+												div.row
+													div.col.col-md-6.col-sm-6
+														button#btnAdicionar.btn.btn-success.btn-block(type="submit") Pesquisar

@@ -1,0 +1,32 @@
+doctype html
+html
+	include head
+	body
+		include navbar
+		
+		.wrapper
+			.header
+			div.container
+				div.row.top30
+					div.col.col-md-5.col-md-offset-3.col-sm-7.col-sm-offset-3
+						div.panel
+							div.panel-heading Entrar
+							div.panel-body
+								div.row
+									div.col.col-md-12
+										form(action="/logar", method="POST")
+											div.form-group
+												label.control-label(for="nome") Usuário
+												input.form-control(type="text", name="nome", autofocus)
+
+											div.form-group
+												label.control-label(for="senha") Senha
+												input.form-control(type="password", name="senha")
+											
+											div.row
+												div.col.col-md-6.col-sm-6
+													button#btnLogar.btn.btn-success.btn-block(type="submit") Logar
+
+												div.col.col-md-6.col-sm-6
+													a(href="/cadastro")
+														button.btn.btn-primary.btn-block(type="button") Cadastrar
