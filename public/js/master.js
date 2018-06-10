@@ -10,13 +10,14 @@ $(document).ready(function(){
 	href.shift();
 	href.shift();
 	href = href.join('/');
+	href = href.substring(href.indexOf('/'), href.length);
 	
 	if (window.location.href.includes('/ficha/')) {
 		// Se abriu alguma ficha
 		var fichaId = window.location.href.substring(window.location.href.indexOf('/ficha/') + 7, window.location.href.length);
 
 		socket.emit('adicionaFichaHistorico', fichaId, fingerprint);
-	} else if (window.location.href.includes('/pagina/') || href.substring(href.indexOf('/'), href.length) == '/') {
+	} else if (href == '/pesquisa' || window.location.href.includes('/pagina/') || href == '/') {
 		// Se for inicio
 		socket.emit('pesquisarRecomendados', fingerprint);
 	}
