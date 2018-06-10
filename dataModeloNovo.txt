@@ -1,4 +1,4 @@
-[
+db.celulares.insertMany([
   {
     "nome": "LG Q7 Alpha",
     "imagem": "https://t.tudocdn.net/337021?w=146&h=304",
@@ -4058,4 +4058,4 @@
     "sar_us": "Head 0.61 W/kg",
     "sar_eu": "Head 0.37 W/kg Body 1.63 W/kg"
   }
-]
+])
