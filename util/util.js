@@ -20,22 +20,53 @@ const util = {
         ];
 
         labelKeyOpcoes.forEach(label => {
-            keysOpcoes.push({ nome: label.nome, opcoes: [] });    
+            keysOpcoes.push({
+                nome: label.nome, 
+                keyJson: label.keyJson, 
+                opcoes: [] 
+            });
         });
 
         dadosCelulares.forEach((celular) => {
             labelKeyOpcoes.forEach((label, i) => {
-                if (keysOpcoes[i].opcoes.length == 0 || !keysOpcoes[i].opcoes.includes(celular[label.keyJson])) {
-                    keysOpcoes[i].opcoes.push(celular[label.keyJson]);
+                if (celular[label.keyJson] !== undefined) {
+                    let valorTestar = celular[label.keyJson].trim();
+
+                    if (keysOpcoes[i].keyJson == 'sistema_operacional') {
+                        valorTestar = valorTestar.split(' ');
+                        valorTestar = valorTestar[0] + ' ' + valorTestar[1];
+                    } else if (keysOpcoes[i].keyJson == 'memoria_expansivel') {
+                        valorTestar = valorTestar.substring(valorTestar.indexOf('atè'), valorTestar.length);
+                    }
+
+                    if (valorTestar !== '') {
+                        if (keysOpcoes[i].opcoes.length == 0 || !keysOpcoes[i].opcoes.includes(valorTestar)) {
+                            keysOpcoes[i].opcoes.push(valorTestar);
+                        }
+
+                    }
+                    keysOpcoes[i].opcoes.sort();
                 }
             });
-            
-            /*if (keysOpcoes[1].opcoes.length == 0 || !keysOpcoes[1].opcoes.includes(celular.sistema_operacional)) {
-                keysOpcoes[1].opcoes.push(celular.sistema_operacional);
-            }*/
+
+
         });
 
         return keysOpcoes;
+    },
+
+    addOr: (or, keyMongo, filtroPesquisa) => {
+        if (!Array.isArray(filtroPesquisa)) {
+            if (filtroPesquisa) {
+                or.push({ [keyMongo]: { $regex: new RegExp(filtroPesquisa + '.*'), $options: 'i' } });
+            }
+        } else {
+            filtroPesquisa.map(op => {
+                or.push({ [keyMongo]: { $regex: new RegExp(op + '.*'), $options: 'i' } });
+            });
+        }
+
+        return or;
     }
 };
 

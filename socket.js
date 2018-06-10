@@ -3,14 +3,33 @@ const bayes = require('classificator');
 const classifier = bayes();
 const dadosCelulares = require('./celulares');
 
+const cFingerPrints = require('./mongo/controller/fingerprints');
+
 module.exports = function (_io) {
 	io = _io;
 
 	io.sockets.on('connection', function (socket) {
-		socket.on('pesquisarRecomendados', (caracteristicasPesquisa) => {
-			let classificado = pesquisarRecomendados(caracteristicasPesquisa);
+		socket.on('pesquisarRecomendados', (fingerprintNome) => {
+			// Pega as caracteristicas da ficha
+			cFingerPrints.pesquisarPopulateCarateristicasFichas(fingerprintNome, (fingerprints) => {
+				
+				let caracteristicasPesquisa = '';
 
-			io.sockets.emit('retornoPesquisarRecomendados', classificado);
+				fingerprints.map(fingerprint => {
+					caracteristicasPesquisa += fingerprint.fichas.reduce((acc, o, i) => {
+						return acc + (i > 0 ? ', ' : '') + o.caracteristicas;
+					}, '');
+				});
+				
+				let classificado = pesquisarRecomendados(caracteristicasPesquisa);
+				
+				io.sockets.emit('retornoPesquisarRecomendados', classificado);
+			});
+		});
+		
+		socket.on('adicionaFichaHistorico', (fichaId, fingerprintNome) => {
+			cFingerPrints.adicionarFicha(fichaId, fingerprintNome, (fingerprint) => {
+			});
 		});
 	});
 };
@@ -21,12 +40,12 @@ function pesquisarRecomendados(caracteristicasPesquisa) {
 	let classificado = classifier.categorize(caracteristicasPesquisa.replace(/\./g, 'V'));
 
 	classificado.likelihoods = classificado.likelihoods.map((recomendado) => {
-		let { caracteristicas, imagem } = dadosCelulares.find(o => o.nome == recomendado.category);
+		let celularEncontrado = dadosCelulares.find(o => o.nome == recomendado.category);
 
 		recomendado = {
 			...recomendado, 
-			imagem,
-			caracteristicas: destacaAchadosMostra(caracteristicas, caracteristicasPesquisa)
+			...celularEncontrado,
+			motivo: mostraMotivo(celularEncontrado.caracteristicas, caracteristicasPesquisa)
 		};
 
 		return recomendado;
@@ -35,7 +54,7 @@ function pesquisarRecomendados(caracteristicasPesquisa) {
 	return classificado;
 }
 
-function destacaAchadosMostra(caracteristicas, pesquisa) {
+function mostraMotivo(caracteristicas, pesquisa) {
 	palavras = pesquisa.split(', ');
 	caracteristicasNova = caracteristicas;
 	palavrasAchadas = [];
@@ -49,43 +68,10 @@ function destacaAchadosMostra(caracteristicas, pesquisa) {
 			caracteristicasNova.toLowerCase().indexOf(palavra.toLowerCase()) >= 0
 				) {
 			palavrasAchadas.push(palavra);
-
-			iInicioPalavra = caracteristicasNova.indexOf(palavra);
-
-			caracteristicasNova = caracteristicasNova.substring(0, iInicioPalavra) +
-				'<font color="red">' +
-				caracteristicasNova.substring(iInicioPalavra, palavra.length + iInicioPalavra) +
-				'</font>' +
-				caracteristicasNova.substring(palavra.length + iInicioPalavra);
 		}
 	}
 
-	caracteristicasNova = palavrasAchadas.join('<br>') + '<hr>' + caracteristicasNova;
-
-	return caracteristicasNova;
-}
-
-function destacaAchados(caracteristicas, pesquisa) {
-	palavras = pesquisa.split(', ');
-	caracteristicasNova = caracteristicas;
-
-	for (palavra of palavras) {
-		// Se a palavra pesquisada estiver nas caracteristicas deixa fonte vermelha
-		if (caracteristicasNova.toLowerCase().indexOf(', ' + palavra.toLowerCase() + ',') >= 0 ||
-			caracteristicasNova.toLowerCase().indexOf(palavra.toLowerCase() + ',') >= 0 ||
-			caracteristicasNova.toLowerCase().indexOf(', ' + palavra.toLowerCase()) >= 0 ||
-			caracteristicasNova.toLowerCase().indexOf(', ' + palavra.toLowerCase()) >= 0 ||
-			caracteristicasNova.toLowerCase().indexOf(palavra.toLowerCase()) >= 0
-				) {
-			iInicioPalavra = caracteristicasNova.indexOf(palavra);
-
-			caracteristicasNova = caracteristicasNova.substring(0, iInicioPalavra) +
-				'<font color="red">' +
-				caracteristicasNova.substring(iInicioPalavra, palavra.length + iInicioPalavra) +
-				'</font>' +
-				caracteristicasNova.substring(palavra.length + iInicioPalavra);
-		}
-	}
+	caracteristicasNova = palavrasAchadas.join(', ');
 
 	return caracteristicasNova;
 }

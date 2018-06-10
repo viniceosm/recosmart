@@ -4,20 +4,52 @@ socket = io.connect();
 
 $(document).ready(function(){
 	var fingerprint = new Fingerprint({screen_resolution: true}).get();
-	console.log('my fingerprint: ', fingerprint);
+
+	var href = window.location.href;
+	href = href.split('/');
+	href.shift();
+	href.shift();
+	href = href.join('/');
 	
-	$('#formSimulaRecomendados').submit(function (e) {
-		e.preventDefault();
+	if (window.location.href.includes('/ficha/')) {
+		// Se abriu alguma ficha
+		var fichaId = window.location.href.substring(window.location.href.indexOf('/ficha/') + 7, window.location.href.length);
 
-		var caracteristicas = $('#formSimulaRecomendados [name="caracteristicas"]').val();
-
-		if (caracteristicas.trim()!=='') {
-			socket.emit('pesquisarRecomendados', caracteristicas);
-		}
-	});
+		socket.emit('adicionaFichaHistorico', fichaId, fingerprint);
+	} else if (window.location.href.includes('/pagina/') || href.substring(href.indexOf('/'), href.length) == '/') {
+		// Se for inicio
+		socket.emit('pesquisarRecomendados', fingerprint);
+	}
 });
 
 socket.on('retornoPesquisarRecomendados', function (recomendados) {
+	$('#listaRecomendados').html('');
+
+	let html = '';
+
+	for (let recomendado of recomendados.likelihoods) {
+		html += `
+			<div class="panel panel-inline">
+				<div class="panel-body cardPequeno">
+					<div class="overflow-hidden">
+						<img class="pull-left" src="${recomendado.imagem}" height="60">
+						<div class="nomeCelular pull-left">
+							<b>${recomendado.category}</b>
+						</div>
+					</div>
+					<div>
+						<p>SO: ${recomendado.sistema_operacional}</p>
+						<p>Processador: ${recomendado.processador}</p>
+						<p>${recomendado.ram} RAM</p>
+					</div>
+				</div>
+			</div>`;
+	}
+
+	$('#listaRecomendados').html(html);
+});
+
+socket.on('simulaRetornoPesquisarRecomendados', function (recomendados) {
 	$('#listaRecomendados').html('');
 	
 	let html = '';

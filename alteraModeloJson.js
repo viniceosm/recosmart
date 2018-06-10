@@ -33,7 +33,7 @@ for (let celular of celulares) {
     celularesNovoModelo.push(objCelular);
 }
 
-var file = __dirname + '/dataModeloNovo.json';
+var file = __dirname + '/dataModeloNovo.txt';
 
 jsonfile.writeFile(file, celularesNovoModelo, { spaces: 2 }, function (err) {
     if (err) {

@@ -7,27 +7,11 @@ html
 		.wrapper
 			.header
 			.container-fluid
-				.row
-					div.col.col-md-12
-						.panel
-							.panel-heading Recomendados
-							.panel-body
-								.row
-									.col.col-md-12(style="overflow: auto")
-										p Mais recomendado pro menos recomendado:
-										#listaRecomendados
-											each recomendado in recomendados.likelihoods
-												.col.col-md-6
-													.panel
-														.panel-body.cardPequeno
-															div.overflow-hidden
-																img.pull-left(src="#{recomendado.imagem}", height="60")
-																div.nomeCelular.pull-left
-																	b #{recomendado.category}
-															div
-																p SO: #{recomendado.sistema_operacional}
-																p Processador: #{recomendado.processador}
-																p #{recomendado.ram} RAM
+				.panel
+					.panel-heading Recomendados
+					.panel-body
+						#listaRecomendados(style="overflow: scroll; height: 220px; white-space: nowrap;")
+							| Carregando...
 
 				div.row
 					div.col.col-md-4
@@ -36,45 +20,68 @@ html
 							div.panel-body
 								div.row
 									div.col.col-md-12
-										form#formPesquisaCelular
-											- var keysOpcoes = [] 
-											- keysOpcoes[0] = { nome: 'Sistema operacional', opcoes: ['Android 8.1', 'Android 8.0'] }
-											- keysOpcoes[1] = { nome: 'Marca', opcoes: ['Samsung', 'Lenovo'] }
-
-											each keyOp in pesquisaveis
-												div.form-group
-													| #{keyOp.nome}
-													each op in keyOp.opcoes
-														.checkbox
-															label
-																input(type='checkbox', name='chk#{keyOp.nome}', value="#{op}")
-																| #{op}
+										form#formPesquisaCelular(action="/pesquisa", method="post")
+											#accordion.accordion.panel-group.accordion.wrap(role='tablist', aria-multiselectable='true')
+												each keyOp in pesquisaveis
+													if keyOp.opcoes.length > 0
+														.accordion.panel
+															#headingOne.accordion.panel-heading(role='tab')
+																h4.accordion.panel-title
+																	a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapse#{keyOp.keyJson}', aria-expanded='true', aria-controls='collapse#{keyOp.keyJson}')
+																		| #{keyOp.nome} #1
+															div.panel-collapse.collapse(id="collapse#{keyOp.keyJson}", role='tabpanel', aria-labelledby='heading#{keyOp.keyJson}')
+																.accordion.panel-body
+																	each op in keyOp.opcoes
+																		.checkbox
+																			label
+																				input(type='checkbox', name='chk#{keyOp.keyJson}', value="#{op}")
+																				| #{op}
 
 											div.row
 												div.col.col-md-6.col-sm-6
 													button#btnAdicionar.btn.btn-success.btn-block(type="submit") Pesquisar
+											.row
+												div.col.col-md-6.col-sm-6
+													b
+														span(style="vertical-align: super;") Made with
+														i.material-icons(style="color: #e25555;") favorite
+														span(style="vertical-align: super;") in nodejs
 
 					div.col.col-md-8
 						.panel
-							.panel-heading Recomendados
+							.panel-heading Fichas tecnicas
 							.panel-body
 								.row
 									.col.col-md-12
-										p Mais recomendado pro menos recomendado:
-										#listaRecomendados
-											each recomendado in recomendados.likelihoods
-												.col.col-md-6
-													.panel
-														.panel-body.cardPequeno
-															div.overflow-hidden
-																img.pull-left(src="#{recomendado.imagem}", height="60")
-																div.nomeCelular.pull-left
-																	b #{recomendado.category}
-															div
-																p SO: #{recomendado.sistema_operacional}
-																p Processador: #{recomendado.processador}
-																p #{recomendado.ram} RAM
+										#listaFichasTecnicas
+											if celulares
+												each celular in celulares
+													.col.col-md-10
+														.panel
+															.panel-body.cardFichas
+																div.overflow-hidden
+																	img.pull-left(src="#{celular.imagem}", height="60")
+																	div.nomeCelular.pull-left
+																		b #{celular.nome}
 
+																table.table.table-hover.top10
+																	tr
+																		td Sistema Operacional
+																		td #{celular.sistema_operacional}
+																	tr
+																		td Processador
+																		td #{celular.processador}
+																	tr
+																		td RAM
+																		td #{celular.ram}
+																
+																a(href="/ficha/#{celular._id}")
+																	button.btn.btn-success.btn-block Ver mais...
+											else
+												p.text-danger Sem resultados
+
+
+					//- Simula navegacao do usuario, passando caracteristicas
 					div.col.col-md-12.hide
 							div.panel
 								div.panel-heading

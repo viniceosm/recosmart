@@ -1,0 +1,32 @@
+doctype html
+html
+	include head
+	body
+		include navbar
+		
+		.wrapper
+			.header
+			.container-fluid
+				if ficha
+					div.col.col-md-12
+						.panel
+							.panel-heading Ficha
+							.panel-body
+								div.col-md-2
+									img.pull-left(src="#{ficha.imagem}", height="250")
+									div.nomeCelular.pull-left
+
+								div.col-md-4
+									h2 #{ficha.nome}
+									table.table.table-hover
+										tr
+											td Sistema Operacional
+											td #{ficha.sistema_operacional}
+										tr
+											td Processador
+											td #{ficha.processador}
+										tr
+											td RAM
+											td #{ficha.ram}
+				else
+					p.text-danger Ficha não encontrada
