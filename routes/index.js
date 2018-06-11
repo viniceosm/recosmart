@@ -26,13 +26,16 @@ const cCelulares = require('./../mongo/controller/celulares');
 router.get('/', (req, res) => {
 	let session = req.session;
 	session.exist = true;
+
+	let paginacao = retornaPaginacao();
 	
 	cCelulares.pesquisar({}, (celulares) => {
 		res.render('home', {
 			title: varGlobal.tituloPagina,
 			usuario: null,
 			celulares,
-			pesquisaveis: funcoes.pesquisaveis()
+			pesquisaveis: funcoes.pesquisaveis(),
+			paginacao
 		});
 	}, 10, 0);
 });
@@ -41,15 +44,32 @@ router.get('/pagina/:pagina', (req, res) => {
 	let session = req.session;
 	session.exist = true;
 	
+	paginaAtual = parseInt(req.params.pagina);
+	let paginacao = retornaPaginacao(paginaAtual);
+	
 	cCelulares.pesquisar({}, (celulares) => {
 		res.render('home', {
 			title: varGlobal.tituloPagina,
 			usuario: null,
 			celulares,
-			pesquisaveis: funcoes.pesquisaveis()
+			pesquisaveis: funcoes.pesquisaveis(),
+			paginacao
 		});
 	}, 10, (parseInt(req.params.pagina) - 1) * 10);
 });
+
+function retornaPaginacao(paginaAtual = 1) {
+	let paginacao = [];
+
+	if (paginaAtual > 1) {
+		paginacao.push({ numero: paginaAtual -1, class: '' });
+	}
+
+	paginacao.push({ numero: paginaAtual, class: 'active' });
+	paginacao.push({ numero: paginaAtual + 1, class: '' });
+
+	return paginacao;
+}
 
 router.post('/pesquisa', (req, res) => {
 	let session = req.session;
