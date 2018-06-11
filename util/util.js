@@ -34,7 +34,7 @@ const util = {
 
                     if (keysOpcoes[i].keyJson == 'sistema_operacional') {
                         valorTestar = valorTestar.split(' ');
-                        valorTestar = valorTestar[0] + ' ' + valorTestar[1];
+                        valorTestar = valorTestar[0] + (valorTestar.length > 1 ? ' ' + valorTestar[1] : '');
                     } else if (keysOpcoes[i].keyJson == 'memoria_expansivel') {
                         valorTestar = valorTestar.substring(valorTestar.indexOf('atè'), valorTestar.length);
                     }

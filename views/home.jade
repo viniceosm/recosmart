@@ -28,7 +28,7 @@ html
 															#headingOne.accordion.panel-heading(role='tab')
 																h4.accordion.panel-title
 																	a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapse#{keyOp.keyJson}', aria-expanded='true', aria-controls='collapse#{keyOp.keyJson}')
-																		| #{keyOp.nome} #1
+																		| #{keyOp.nome}
 															div.panel-collapse.collapse(id="collapse#{keyOp.keyJson}", role='tabpanel', aria-labelledby='heading#{keyOp.keyJson}')
 																.accordion.panel-body
 																	each op in keyOp.opcoes
