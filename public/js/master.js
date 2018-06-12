@@ -30,7 +30,10 @@ $(document).ready(function(){
 socket.on('retornoPesquisarRecomendados', function (recomendados) {
 	$('#listaRecomendados').html('');
 
-	let html = '';
+	let html = `
+		<div class="panel-heading">Recomendados</div>
+			<div class="panel-body">
+				<div style="overflow: scroll; height: 220px; white-space: nowrap;">`;
 
 	for (let recomendado of recomendados[0].likelihoods) {
 		html += `
@@ -51,6 +54,8 @@ socket.on('retornoPesquisarRecomendados', function (recomendados) {
 			</div>`;
 	}
 
+	html += ` </div> </div>`;
+
 	$('#listaRecomendados').html(html);
 });
 
@@ -63,26 +68,30 @@ socket.on('retornoPesquisarHistorico', function (fichas) {
 
 	let html = '';
 
-	for (let ficha of fichas) {
-		html += `
-			<div id="historico${ficha._id}" class="panel">
-				<div class="panel-body cardPequeno">
-					<div class="overflow-hidden">
-						<img class="pull-left" src="${ficha.imagem}" height="60">
-						<div class="nomeCelular pull-left">
-							<b>${ficha.nome}</b>
+	if (fichas.length > 0) {
+		for (let ficha of fichas) {
+			html += `
+				<div id="historico${ficha._id}" class="panel">
+					<div class="panel-body cardPequeno">
+						<div class="overflow-hidden">
+							<img class="pull-left" src="${ficha.imagem}" height="60">
+							<div class="nomeCelular pull-left">
+								<b>${ficha.nome}</b>
+							</div>
+							<button class="btn btn-primary btn-just-icon pull-right" onclick="deletaHistorico('${ficha._id}')">
+								<i class="material-icons">delete</i>
+							</button>
 						</div>
-						<button class="btn btn-primary btn-just-icon pull-right" onclick="deletaHistorico('${ficha._id}')">
-							<i class="material-icons">delete</i>
-						</button>
+						<div>
+							<p>SO: ${ficha.sistema_operacional}</p>
+							<p>Processador: ${ficha.processador}</p>
+							<p>${ficha.ram} RAM</p>
+						</div>
 					</div>
-					<div>
-						<p>SO: ${ficha.sistema_operacional}</p>
-						<p>Processador: ${ficha.processador}</p>
-						<p>${ficha.ram} RAM</p>
-					</div>
-				</div>
-			</div>`;
+				</div>`;
+		}
+	} else {
+		html = "Sem histórico";
 	}
 
 	$('#listaFichasTecnicas').html(html);

@@ -30,8 +30,10 @@ module.exports = function (_io) {
 		
 		socket.on('pesquisarHistorico', (fingerprintNome) => {
 			cFingerPrints.pesquisarPorNomePopulateCarateristicasFichas(fingerprintNome, (fingerprint) => {
-				if (fingerprint !== undefined) {
+				if (fingerprint !== undefined && fingerprint !== null) {
 					socket.emit('retornoPesquisarHistorico', fingerprint.fichas);
+				} else {
+					socket.emit('retornoPesquisarHistorico', []);
 				}
 			});
 		});

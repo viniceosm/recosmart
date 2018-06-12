@@ -7,10 +7,7 @@ html
 		.wrapper
 			.header
 			.container-fluid
-				.panel
-					.panel-heading Recomendados
-					.panel-body
-						#listaRecomendados(style="overflow: scroll; height: 220px; white-space: nowrap;")
+				.panel#listaRecomendados
 
 				div.row
 					div.col.col-md-4
@@ -20,6 +17,8 @@ html
 								div.row
 									div.col.col-md-12
 										form#formPesquisaCelular(action="/pesquisa", method="post")
+											input.form-control(name="txtQualquer", placeholder="Qualquer caracteristica")
+
 											#accordion.accordion.panel-group.accordion.wrap(role='tablist', aria-multiselectable='true')
 												each keyOp in pesquisaveis
 													if keyOp.opcoes.length > 0
