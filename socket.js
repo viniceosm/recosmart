@@ -11,7 +11,7 @@ module.exports = function (_io) {
 	io.sockets.on('connection', function (socket) {
 		socket.on('pesquisarRecomendados', (fingerprintNome) => {
 			// Pega as caracteristicas da ficha
-			cFingerPrints.pesquisarPopulateCarateristicasFichas(fingerprintNome, (fingerprints) => {
+			cFingerPrints.pesquisarPorNomePopulateCarateristicasFichas(fingerprintNome, (fingerprints) => {
 				
 				let caracteristicasPesquisa = '';
 
@@ -29,6 +29,13 @@ module.exports = function (_io) {
 		
 		socket.on('adicionaFichaHistorico', (fichaId, fingerprintNome) => {
 			cFingerPrints.adicionarFicha(fichaId, fingerprintNome, (fingerprint) => {
+			});
+		});
+		
+		socket.on('pesquisarHistorico', (fingerprintNome) => {
+			cFingerPrints.pesquisarPorNomePopulateCarateristicasFichas(fingerprintNome, (fingerprint) => {
+				console.log(fingerprint[0]);
+				io.sockets.emit('retornoPesquisarHistorico', fingerprint[0].fichas);
 			});
 		});
 	});

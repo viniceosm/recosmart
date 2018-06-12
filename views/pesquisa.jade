@@ -83,40 +83,23 @@ html
 														ul.pagination.pagination-primary
 															if paginacao[2] != undefined
 																li
-																	a(href='/pagina/#{paginacao[0].numero}') < #{paginacao[0].numero}
+																	a(href='pesquisa/#{paginacao[0].numero}') < #{paginacao[0].numero}
 
 															if paginacao[2] == undefined
 																li(class="#{paginacao[0].class}")
-																	a(href='/pagina/#{paginacao[0].numero}') #{paginacao[0].numero}
+																	a(href='pesquisa/#{paginacao[0].numero}') #{paginacao[0].numero}
 															else
 																li(class="#{paginacao[1].class}")
-																	a(href='/pagina/#{paginacao[1].numero}') #{paginacao[1].numero}
+																	a(href='pesquisa/#{paginacao[1].numero}') #{paginacao[1].numero}
 
 
 															if paginacao[2] == undefined
 																li
-																	a(href='/pagina/#{paginacao[1].numero}') #{paginacao[1].numero} >
+																	a(href='pesquisa/#{paginacao[1].numero}') #{paginacao[1].numero} >
 															else
 																li
-																	a(href='/pagina/#{paginacao[2].numero}') #{paginacao[2].numero} >
+																	a(href='pesquisa/#{paginacao[2].numero}') #{paginacao[2].numero} >
 
 
 											else
 												p.text-danger Sem resultados
-
-
-					//- Simula navegacao do usuario, passando caracteristicas
-					div.col.col-md-12.hide
-							div.panel
-								div.panel-heading
-								div.panel-body
-									div.row
-										div.col.col-md-12
-											form#formSimulaRecomendados
-												div.form-group
-													label.control-label(for="caracteristicas") Escreva as caracteristicas
-													input.form-control(type="text", name="caracteristicas", value="sistema operacional android 7")
-
-												div.row
-													div.col.col-md-6.col-sm-6
-														button#btnAdicionar.btn.btn-success.btn-block(type="submit") Pesquisar

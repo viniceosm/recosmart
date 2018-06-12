@@ -8,6 +8,14 @@ const crud = {
                 callback(fingerprints);
             });
     },
+    pesquisarPopulateCarateristicasFichas: (query, callback) => {
+        model.find(query, {})
+            .populate('fichas')
+            .exec((err, fingerprints) => {
+                if (err) console.log(err);
+                callback(fingerprints);
+            });
+    },
     criar: (fields, callback) => {
         model.create(fields, (err, fingerprint) => {
             if (err) console.log(err);
@@ -59,7 +67,7 @@ const crud = {
             }
         });
     },
-    pesquisarPopulateCarateristicasFichas: (fingerprintNome, callback) => {
+    pesquisarPorNomePopulateCarateristicasFichas: (fingerprintNome, callback) => {
         model.find({ nome: fingerprintNome }, {})
             .populate('fichas')
             .exec((err, fingerprints) => {

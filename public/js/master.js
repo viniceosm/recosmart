@@ -17,9 +17,12 @@ $(document).ready(function(){
 		var fichaId = window.location.href.substring(window.location.href.indexOf('/ficha/') + 7, window.location.href.length);
 
 		socket.emit('adicionaFichaHistorico', fichaId, fingerprint);
-	} else if (href == '/pesquisa' || window.location.href.includes('/pagina/') || href == '/') {
+	} else if (href.includes('/pesquisa') || window.location.href.includes('/pagina/') || href == '/') {
 		// Se for inicio
 		socket.emit('pesquisarRecomendados', fingerprint);
+	} else if (href == '/historico') {
+		// Se for historico
+		socket.emit('pesquisarHistorico', fingerprint);
 	}
 });
 
@@ -50,23 +53,29 @@ socket.on('retornoPesquisarRecomendados', function (recomendados) {
 	$('#listaRecomendados').html(html);
 });
 
-socket.on('simulaRetornoPesquisarRecomendados', function (recomendados) {
-	$('#listaRecomendados').html('');
-	
+socket.on('retornoPesquisarHistorico', function (fichas) {
+	$('#listaFichasTecnicas').html('');
+
 	let html = '';
-	
-	for(let recomendado of recomendados.likelihoods) {
+
+	for (let ficha of fichas) {
 		html += `
-			<div class="col col-md-3"> 
-				<div class="panel">
-					<div class="panel-body cardPequeno">
-						<img src="${recomendado.imagem}" height="60">
-						<b>&nbsp;&nbsp;${ recomendado.category }</b>
-						<p>${ recomendado.caracteristicas }</p>
+			<div class="panel panel-inline">
+				<div class="panel-body cardPequeno">
+					<div class="overflow-hidden">
+						<img class="pull-left" src="${ficha.imagem}" height="60">
+						<div class="nomeCelular pull-left">
+							<b>${ficha.nome}</b>
+						</div>
+					</div>
+					<div>
+						<p>SO: ${ficha.sistema_operacional}</p>
+						<p>Processador: ${ficha.processador}</p>
+						<p>${ficha.ram} RAM</p>
 					</div>
 				</div>
 			</div>`;
 	}
 
-	$('#listaRecomendados').html(html);
+	$('#listaFichasTecnicas').html(html);
 });

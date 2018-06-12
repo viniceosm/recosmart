@@ -22,6 +22,7 @@ router.use(cookie);
 router.use(sessionMiddleware);
 
 const cCelulares = require('./../mongo/controller/celulares');
+const cFingerPrints = require('./../mongo/controller/fingerprints');
 
 router.get('/', (req, res) => {
 	let session = req.session;
@@ -71,6 +72,16 @@ function retornaPaginacao(paginaAtual = 1) {
 	return paginacao;
 }
 
+router.get('/historico', (req, res) => {
+	cFingerPrints.pesquisarPopulateCarateristicasFichas({}, (celulares) => {
+		res.render('historico', {
+			title: varGlobal.tituloPagina,
+			usuario: null,
+			celulares: celulares.fichas,
+		});
+	}, 10, 0);
+});
+
 router.post('/pesquisa', (req, res) => {
 	let session = req.session;
 	if (session.exist) {
@@ -82,7 +93,7 @@ router.post('/pesquisa', (req, res) => {
 	res.redirect('/pesquisa');
 });
 
-router.get('/pesquisa', (req, res) => {
+router.get('/pesquisa/:pagina?', (req, res) => {
 	let session = req.session;
 	if (session.exist) {
 		let pesquisa = session.pesquisa;
@@ -107,14 +118,18 @@ router.get('/pesquisa', (req, res) => {
 			query = { $or: or };
 		}
 
+		paginaAtual = (req.params.pagina == undefined) ? 1 : parseInt(req.params.pagina);
+		let paginacao = retornaPaginacao(paginaAtual);
+		
 		cCelulares.pesquisar(query, (celulares) => {
-			res.render('home', {
+			res.render('pesquisa', {
 				title: varGlobal.tituloPagina,
 				usuario: null,
 				celulares,
-				pesquisaveis: funcoes.pesquisaveis()
+				pesquisaveis: funcoes.pesquisaveis(),
+				paginacao
 			});
-		});
+		}, 10, (paginaAtual - 1) * 10);
 	} else {
 		res.redirect('/');
 	}

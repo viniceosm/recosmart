@@ -10,24 +10,13 @@ nav.navbar.navbar-primary.navbar-fixed-top
                 span.icon-bar
 
             .visible-xs-block
-                if !usuario
-                    a.text-light(href='/login')
-                        i.material-icons account_circle
-                        | Login
-                else
-                    .navbar-brand.pull-right
-                            a(href="/u/#{usuario.nome}")
-                                button.btn.btn-success.btn-xs #{usuario.nome}
+                a.text-light(href='/historico')
+                    //- i.material-icons account_circle
+                    | Histórico
 
         #menu-navbar-primary.collapse.navbar-collapse
             ul.nav.navbar-nav.navbar-right
-                if !usuario
-                    li
-                        a(href='/login')
-                            i.material-icons account_circle
-                            | Login
-                else
-                    li
-                        a(href="/sair")
-                            i.material-icons exit_to_app
-                            | Sair
+                li
+                    a(href='/historico')
+                        //- i.material-icons account_circle
+                        | Histórico
