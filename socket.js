@@ -23,7 +23,7 @@ module.exports = function (_io) {
 				
 				let classificado = pesquisarRecomendados(caracteristicasPesquisa);
 				
-				io.sockets.emit('retornoPesquisarRecomendados', classificado);
+				socket.emit('retornoPesquisarRecomendados', classificado);
 			});
 		});
 		
@@ -34,7 +34,7 @@ module.exports = function (_io) {
 		
 		socket.on('pesquisarHistorico', (fingerprintNome) => {
 			cFingerPrints.pesquisarPorNomePopulateCarateristicasFichas(fingerprintNome, (fingerprint) => {
-				io.sockets.emit('retornoPesquisarHistorico', fingerprint[0].fichas);
+				socket.emit('retornoPesquisarHistorico', fingerprint[0].fichas);
 			});
 		});
 		
