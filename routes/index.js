@@ -33,7 +33,6 @@ router.get('/', (req, res) => {
 	cCelulares.pesquisar({}, (celulares) => {
 		res.render('home', {
 			title: varGlobal.tituloPagina,
-			usuario: null,
 			celulares,
 			pesquisaveis: funcoes.pesquisaveis(),
 			paginacao
@@ -51,7 +50,6 @@ router.get('/pagina/:pagina', (req, res) => {
 	cCelulares.pesquisar({}, (celulares) => {
 		res.render('home', {
 			title: varGlobal.tituloPagina,
-			usuario: null,
 			celulares,
 			pesquisaveis: funcoes.pesquisaveis(),
 			paginacao
@@ -76,7 +74,6 @@ router.get('/historico', (req, res) => {
 	cFingerPrints.pesquisarPopulateCarateristicasFichas({}, (celulares) => {
 		res.render('historico', {
 			title: varGlobal.tituloPagina,
-			usuario: null,
 			celulares: celulares.fichas,
 		});
 	}, 10, 0);
@@ -124,7 +121,6 @@ router.get('/pesquisa/:pagina?', (req, res) => {
 		cCelulares.pesquisar(query, (celulares) => {
 			res.render('pesquisa', {
 				title: varGlobal.tituloPagina,
-				usuario: null,
 				celulares,
 				pesquisaveis: funcoes.pesquisaveis(),
 				paginacao
@@ -139,7 +135,6 @@ router.get('/ficha/:idFicha', (req, res) => {
 	cCelulares.pesquisarPorId(req.params.idFicha, (ficha) => {
 		res.render('ficha', {
 			title: varGlobal.tituloPagina,
-			usuario: null,
 			ficha
 		});
 	});

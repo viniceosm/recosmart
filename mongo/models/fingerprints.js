@@ -5,6 +5,7 @@ module.exports = function () {
     return db.model('fingerprints', Schema({
         nome: String,
         fichas: [{ type: Schema.Types.ObjectId, ref: 'celulares' }],
+        recomendados: [],
         date: { type: Date, default: Date.now },
         status: { type: Boolean, default: true }
     },

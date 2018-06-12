@@ -67,6 +67,19 @@ const util = {
         }
 
         return or;
+    },
+    addOr2: (or, keyMongo, filtroPesquisa) => {
+        if (!Array.isArray(filtroPesquisa)) {
+            if (filtroPesquisa) {
+                or.push({ [keyMongo]: { $regex: new RegExp('.*' + filtroPesquisa + '.*'), $options: 'i' } });
+            }
+        } else {
+            filtroPesquisa.map(op => {
+                or.push({ [keyMongo]: { $regex: new RegExp('.*' + op + '.*'), $options: 'i' } });
+            });
+        }
+
+        return or;
     }
 };
 

@@ -32,7 +32,7 @@ socket.on('retornoPesquisarRecomendados', function (recomendados) {
 
 	let html = '';
 
-	for (let recomendado of recomendados.likelihoods) {
+	for (let recomendado of recomendados[0].likelihoods) {
 		html += `
 			<div class="panel panel-inline">
 				<div class="panel-body cardPequeno">

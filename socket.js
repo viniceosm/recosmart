@@ -2,68 +2,89 @@ let io;
 const bayes = require('classificator');
 const classifier = bayes();
 const dadosCelulares = require('./celulares');
+let funcoes = require('./util/util');
 
 const cFingerPrints = require('./mongo/controller/fingerprints');
+const cCelulares = require('./mongo/controller/celulares');
 
 module.exports = function (_io) {
 	io = _io;
-
+	
 	io.sockets.on('connection', function (socket) {
 		socket.on('pesquisarRecomendados', (fingerprintNome) => {
-			// Pega as caracteristicas da ficha
-			cFingerPrints.pesquisarPorNomePopulateCarateristicasFichas(fingerprintNome, (fingerprints) => {
-				
-				let caracteristicasPesquisa = '';
-
-				fingerprints.map(fingerprint => {
-					caracteristicasPesquisa += fingerprint.fichas.reduce((acc, o, i) => {
-						return acc + (i > 0 ? ', ' : '') + o.caracteristicas;
-					}, '');
+			if (socket.request.session.recomendados !== undefined) {
+				socket.emit('retornoPesquisarRecomendados', socket.request.session.recomendados);
+			} else {
+				cFingerPrints.pesquisarPorNome(fingerprintNome, (fingerprint) => {
+					if (fingerprint !== undefined && fingerprint !== null)
+						socket.emit('retornoPesquisarRecomendados', fingerprint.recomendados);
 				});
-				
-				let classificado = pesquisarRecomendados(caracteristicasPesquisa);
-				
-				socket.emit('retornoPesquisarRecomendados', classificado);
-			});
+			}
 		});
 		
 		socket.on('adicionaFichaHistorico', (fichaId, fingerprintNome) => {
 			cFingerPrints.adicionarFicha(fichaId, fingerprintNome, (fingerprint) => {
+				alteraRecomendados(socket, fingerprintNome);
 			});
 		});
 		
 		socket.on('pesquisarHistorico', (fingerprintNome) => {
 			cFingerPrints.pesquisarPorNomePopulateCarateristicasFichas(fingerprintNome, (fingerprint) => {
-				socket.emit('retornoPesquisarHistorico', fingerprint[0].fichas);
+				if (fingerprint !== undefined) {
+					socket.emit('retornoPesquisarHistorico', fingerprint.fichas);
+				}
 			});
 		});
 		
 		socket.on('deletaHistorico', (fichaId, fingerprintNome) => {
 			cFingerPrints.deletaHistorico(fichaId, fingerprintNome, (fingerprint) => {
 				socket.emit('retornoDeletaHistorico', fichaId);
+				alteraRecomendados(socket, fingerprintNome);
 			});
 		});
 	});
 };
 
-function pesquisarRecomendados(caracteristicasPesquisa) {
-	dadosCelulares.forEach(element => classifier.learn(element.caracteristicas.replace(/\./g, 'V'), element.nome));
+function alteraRecomendados(socket, fingerprintNome) {
+	// Pega as caracteristicas da ficha
+	cFingerPrints.pesquisarPorNomePopulateCarateristicasFichas(fingerprintNome, (fingerprint) => {
+		let caracteristicasPesquisa = '';
 
-	let classificado = classifier.categorize(caracteristicasPesquisa.replace(/\./g, 'V'));
+		caracteristicasPesquisa = fingerprint.fichas.reduce((acc, o, i) => {
+			return acc + (i > 0 ? ', ' : '') + o.caracteristicas;
+		}, '');
 
-	classificado.likelihoods = classificado.likelihoods.map((recomendado) => {
-		let celularEncontrado = dadosCelulares.find(o => o.nome == recomendado.category);
+		pesquisarRecomendados(caracteristicasPesquisa, (classificado) => {
+			//salva na session
+			socket.request.session.recomendados = classificado;
 
-		recomendado = {
-			...recomendado, 
-			...celularEncontrado,
-			motivo: mostraMotivo(celularEncontrado.caracteristicas, caracteristicasPesquisa)
-		};
-
-		return recomendado;
+			//salva no mongo
+			cFingerPrints.substituiRecomendados(classificado, fingerprintNome, () => {
+			});
+		});
 	});
-	
-	return classificado;
+}
+
+function pesquisarRecomendados(caracteristicasPesquisa, callback) {
+	cCelulares.pesquisar({}, (celulares) => {
+		celulares.forEach(element => classifier.learn(element.caracteristicas, element.nome));
+
+		let classificado = classifier.categorize(caracteristicasPesquisa);
+
+		classificado.likelihoods = classificado.likelihoods.map((recomendado) => {
+			let celularEncontrado = celulares.find(o => o.nome == recomendado.category);
+			
+			recomendado = {
+				...recomendado,
+				...celularEncontrado._doc
+				// , motivo: mostraMotivo(celularEncontrado.caracteristicas, caracteristicasPesquisa)
+			};
+			
+			return recomendado;
+		});
+
+		callback(classificado);
+	});
 }
 
 function mostraMotivo(caracteristicas, pesquisa) {

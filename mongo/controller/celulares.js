@@ -18,6 +18,12 @@ const crud = {
                 });
         }
     },
+    tamanho: (query, callback) => { 
+        model.count(query, (err, c) => {
+            if (err) console.log(err);
+            callback(c);
+        });
+    },
     logar: (query, callback) => {
         model.find(query, {}, (err, celulares) => {
             if (err) console.log(err);

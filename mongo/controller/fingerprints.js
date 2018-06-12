@@ -68,7 +68,7 @@ const crud = {
         });
     },
     pesquisarPorNomePopulateCarateristicasFichas: (fingerprintNome, callback) => {
-        model.find({ nome: fingerprintNome }, {})
+        model.findOne({ nome: fingerprintNome }, {})
             .populate('fichas')
             .exec((err, fingerprints) => {
                 if (err) console.log(err);
@@ -81,6 +81,19 @@ const crud = {
             if (fingerprint != undefined) {
 
                 fingerprint.fichas.pull({ _id: fichaId });
+
+                // Salva alterações 
+                fingerprint.save((fingerprint) => {
+                    callback(fingerprint);
+                });
+            }
+        });
+    },
+    substituiRecomendados: (recomendados, fingerprintNome, callback) => {
+        // Pesquisa pelo "nome" da fingerprint que é a chave
+        crud.pesquisarPorNome(fingerprintNome, (fingerprint) => {
+            if (fingerprint != undefined) {
+                fingerprint.recomendados = recomendados;
 
                 // Salva alterações 
                 fingerprint.save((fingerprint) => {

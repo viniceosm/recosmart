@@ -10,7 +10,7 @@ let urlPagina1 = 'https://www.tudocelular.com/celulares/fichas-tecnicas_1.html';
 let celulares = [];
 let nCelularEncontrado = 0;
 let terminouBusca = false;
-let numeroPaginaMax = 27;
+let numeroPaginaMax = 10;
 
 let linksCelular = [];
 
