@@ -34,8 +34,13 @@ module.exports = function (_io) {
 		
 		socket.on('pesquisarHistorico', (fingerprintNome) => {
 			cFingerPrints.pesquisarPorNomePopulateCarateristicasFichas(fingerprintNome, (fingerprint) => {
-				console.log(fingerprint[0]);
 				io.sockets.emit('retornoPesquisarHistorico', fingerprint[0].fichas);
+			});
+		});
+		
+		socket.on('deletaHistorico', (fichaId, fingerprintNome) => {
+			cFingerPrints.deletaHistorico(fichaId, fingerprintNome, (fingerprint) => {
+				socket.emit('retornoDeletaHistorico', fichaId);
 			});
 		});
 	});

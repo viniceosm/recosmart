@@ -1,9 +1,10 @@
 var socket;
 socket = io.connect();
 
+var fingerprint = undefined;
 
 $(document).ready(function(){
-	var fingerprint = new Fingerprint({screen_resolution: true}).get();
+	fingerprint = new Fingerprint({screen_resolution: true}).get();
 
 	var href = window.location.href;
 	href = href.split('/');
@@ -53,6 +54,10 @@ socket.on('retornoPesquisarRecomendados', function (recomendados) {
 	$('#listaRecomendados').html(html);
 });
 
+socket.on('retornoDeletaHistorico', function (fichaId) {
+	$('#historico' + fichaId).remove();	
+});
+
 socket.on('retornoPesquisarHistorico', function (fichas) {
 	$('#listaFichasTecnicas').html('');
 
@@ -60,13 +65,16 @@ socket.on('retornoPesquisarHistorico', function (fichas) {
 
 	for (let ficha of fichas) {
 		html += `
-			<div class="panel panel-inline">
+			<div id="historico${ficha._id}" class="panel panel-inline">
 				<div class="panel-body cardPequeno">
 					<div class="overflow-hidden">
 						<img class="pull-left" src="${ficha.imagem}" height="60">
 						<div class="nomeCelular pull-left">
 							<b>${ficha.nome}</b>
 						</div>
+						<button class="btn btn-primary btn-just-icon pull-right" onclick="deletaHistorico('${ficha._id}')">
+							<i class="material-icons">delete</i>
+						</button>
 					</div>
 					<div>
 						<p>SO: ${ficha.sistema_operacional}</p>
@@ -79,3 +87,7 @@ socket.on('retornoPesquisarHistorico', function (fichas) {
 
 	$('#listaFichasTecnicas').html(html);
 });
+
+function deletaHistorico(fichaId) {
+	socket.emit('deletaHistorico', fichaId, fingerprint);
+}
