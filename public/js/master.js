@@ -65,7 +65,7 @@ socket.on('retornoPesquisarHistorico', function (fichas) {
 
 	for (let ficha of fichas) {
 		html += `
-			<div id="historico${ficha._id}" class="panel panel-inline">
+			<div id="historico${ficha._id}" class="panel">
 				<div class="panel-body cardPequeno">
 					<div class="overflow-hidden">
 						<img class="pull-left" src="${ficha.imagem}" height="60">
